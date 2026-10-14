@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node --use-system-ca node_modules/next/dist/bin/next dev",
+    "build": "node --use-system-ca node_modules/next/dist/bin/next build",
+    "start": "node --use-system-ca node_modules/next/dist/bin/next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
+    "@clerk/localizations": "^4.20.0",
     "@clerk/nextjs": "^7.9.14",
     "@neondatabase/serverless": "^1.2.0",
     "drizzle-orm": "^0.45.4",

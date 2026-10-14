@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI news collector: a user clicks a button to pull articles from the TechCrunch AI and The Verge AI RSS feeds. Claude translates, summarizes and categorizes each article in Korean, and the user can save articles to Notion. **`PRD.md` is the spec.** It covers features F1–F7, the data model, processing flows, env vars, development stages and acceptance criteria. Read it before you implement anything. The UI language is Korean.
 
-Current state: only the Next.js scaffold exists, with no app code yet. Development follows the 5 stages in PRD §9: Clerk auth → Neon/Drizzle schema and seed → RSS + Claude + card UI → category filter/management → Notion OAuth + MCP save.
+Current state: stage 1 (Clerk auth) is implemented on the `auth` branch. Development follows the 5 stages in PRD §9: Clerk auth → Neon/Drizzle schema and seed → RSS + Claude + card UI → category filter/management → Notion OAuth + MCP save.
 
 ## Commands
 
@@ -20,11 +20,14 @@ npm run lint    # ESLint (flat config, next core-web-vitals + typescript)
 
 No test runner is configured yet.
 
+The `dev`/`build`/`start` scripts run Next through `node --use-system-ca`. This machine's network re-signs HTTPS with its own root CA (`namguswg`). Windows trusts that CA but Node does not, so without the flag every server-side `fetch` fails with `SELF_SIGNED_CERT_IN_CHAIN`. That covers Clerk's handshake, Claude, Neon, RSS and Notion. Next passes the flag to its worker processes through `NODE_OPTIONS`. Don't change these scripts back to plain `next dev`.
+
 ## Stack and Next.js version caveats
 
 - Next.js 16 (App Router, `src/` dir, `@/*` → `src/*`), React 19, Tailwind CSS v4 (CSS-first config in `src/app/globals.css`, no `tailwind.config`). Tailwind is compiled by the `@tailwindcss/turbopack` loader under `turbopack.rules` in `next.config.ts`. There is no PostCSS config, so don't add one.
 - `next.config.ts` enables **`cacheComponents`** and **`partialPrefetching`**. This changes how dynamic data and auth behave in rendering. See `node_modules/next/dist/docs/01-app/02-guides/authentication-with-cache-components.md` and `01-app/01-getting-started/08-caching.md` before you write data-fetching or auth-gated pages.
 - Request interception uses `proxy.ts`, not `middleware.ts` (see `01-app/01-getting-started/16-proxy.md`). Clerk's route protection (F1) goes there.
+- **Auth (Clerk v7 / Core 3):** `src/proxy.ts` only runs `clerkMiddleware()`. Don't use `createRouteMatcher`, which is deprecated. Every protected page, Server Function and route handler calls `requireUserId()` from `src/lib/auth.ts`, which redirects signed-out users to `/`. On `/`, signed-out visitors see `SignInGate`, which opens the sign-in modal. Use `<Show when="signed-in">` instead of the removed `SignedIn`/`SignedOut`/`Protect` components. Clerk UI is Korean through `koKR` from `@clerk/localizations`.
 - Installed libraries: `@clerk/nextjs`, `@neondatabase/serverless`, `drizzle-orm` / `drizzle-kit`, `@anthropic-ai/sdk`, `rss-parser`.
 - No `.env*` file or `drizzle.config.ts` exists yet. PRD §8 lists the required env vars (Clerk keys, `DATABASE_URL`, `ANTHROPIC_API_KEY`, `NOTION_OAUTH_*`).
 - npm skipped `esbuild`'s postinstall script (allowScripts policy). If `drizzle-kit` fails, run `npm install-scripts approve esbuild`.
