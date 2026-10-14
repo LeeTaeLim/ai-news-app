@@ -44,7 +44,7 @@ The `dev`/`build`/`start` scripts run Next through `node --use-system-ca`. This 
 Three tables. Use Drizzle on Neon.
 
 - `categories`: `id` uuid PK, `userId`, `name`, `description`, `createdAt`. Unique on `(userId, name)`.
-- `articles`: `id` uuid PK, `userId`, `source` (`techcrunch` | `theverge`), `originalTitle`, `link`, `publishedAt`, `titleKo`, `summaryKo`, `categoryId` (nullable FK → categories, `ON DELETE SET NULL`), `notionPageUrl` (nullable), `createdAt`. Unique on `(userId, link)`.
+- `articles`: `id` uuid PK, `userId`, `source` (`techcrunch` | `theverge`), `originalTitle`, `link`, `author` (nullable), `publishedAt`, `titleKo`, `summaryKo`, `categoryId` (nullable FK → categories, `ON DELETE SET NULL`), `notionPageUrl` (nullable), `createdAt`. Unique on `(userId, link)`.
 - `notion_connections`: `userId` PK, `accessToken`, `refreshToken`, `expiresAt`, `targetPageId`.
 
 `categoryId = null` means "미분류" (uncategorized). "미분류" is never stored as a row.

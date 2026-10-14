@@ -146,6 +146,7 @@
 | source | text | techcrunch / theverge |
 | originalTitle | text | 원문 제목 |
 | link | text | 원문 URL |
+| author | text (null 허용) | 원문 작성자 (RSS에 없으면 null) |
 | publishedAt | timestamp | 발행일 |
 | titleKo | text | 한국어 제목 |
 | summaryKo | text | 한국어 요약 |

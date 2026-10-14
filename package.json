@@ -6,7 +6,11 @@
     "dev": "node --use-system-ca node_modules/next/dist/bin/next dev",
     "build": "node --use-system-ca node_modules/next/dist/bin/next build",
     "start": "node --use-system-ca node_modules/next/dist/bin/next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "node --use-system-ca node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "node --use-system-ca node_modules/drizzle-kit/bin.cjs migrate",
+    "db:push": "node --use-system-ca node_modules/drizzle-kit/bin.cjs push",
+    "db:studio": "node --use-system-ca node_modules/drizzle-kit/bin.cjs studio"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
