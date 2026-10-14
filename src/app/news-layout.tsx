@@ -30,17 +30,38 @@ export function NewsShell({
   );
 }
 
+export function EmptyState({ title, hint }: { title: string; hint?: string }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-900">
+      <p className="font-medium break-keep text-slate-700 dark:text-slate-200">
+        {title}
+      </p>
+      {hint && (
+        <p className="mt-1 text-sm break-keep text-slate-500 dark:text-slate-400">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function NewsCardGrid({ articles }: { articles: ArticleCard[] }) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {articles.map((article) => (
+        <NewsCard key={article.id} article={article} />
+      ))}
+    </div>
+  );
+}
+
 export function NewsGrid({ articles }: { articles: ArticleCard[] }) {
   if (articles.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-900">
-        <p className="font-medium text-slate-700 dark:text-slate-200">
-          아직 저장된 뉴스가 없어요.
-        </p>
-        <p className="mt-1 text-sm text-slate-500">
-          뉴스를 가져오면 여기에 카드로 표시됩니다.
-        </p>
-      </div>
+      <EmptyState
+        title="아직 저장된 뉴스가 없어요."
+        hint="뉴스를 가져오면 여기에 카드로 표시됩니다."
+      />
     );
   }
 
@@ -52,11 +73,7 @@ export function NewsGrid({ articles }: { articles: ArticleCard[] }) {
         </h2>
         <span className="text-sm text-slate-500">{articles.length}개</span>
       </div>
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {articles.map((article) => (
-          <NewsCard key={article.id} article={article} />
-        ))}
-      </div>
+      <NewsCardGrid articles={articles} />
     </>
   );
 }
