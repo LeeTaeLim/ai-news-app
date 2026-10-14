@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import type { ArticleCard } from "@/lib/articles";
 import type { CategoryTab } from "@/lib/categories";
 import { EmptyState, NewsCardGrid } from "../news-layout";
+import { fetchNews, type FetchNewsResult } from "./actions";
 
 // Tab key: "all", "uncategorized", or "category:<name>" (names are unique per user).
 type Filter = string;
@@ -17,6 +18,36 @@ const PILL =
 const TAB = `${PILL} border border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-blue-900 dark:hover:text-blue-300`;
 const SELECTED = `${PILL} border border-blue-600 bg-blue-600 text-white`;
 const ADD = `${PILL} border border-dashed border-blue-300 text-blue-700 hover:border-solid hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950`;
+
+type Notice = { tone: "info" | "error"; text: string };
+
+const NOTICE_STYLES: Record<Notice["tone"], string> = {
+  info: "rounded-xl bg-blue-50 px-4 py-3 text-sm break-keep text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+  error:
+    "rounded-xl bg-red-50 px-4 py-3 text-sm break-keep text-red-700 dark:bg-red-950 dark:text-red-300",
+};
+
+function toNotices(result: FetchNewsResult): Notice[] {
+  if (!result.ok) return [{ tone: "error", text: result.error }];
+  const notices: Notice[] = [];
+  if (result.failedSources.length > 0) {
+    notices.push({
+      tone: "error",
+      text: `${result.failedSources.join(", ")} 뉴스를 가져오지 못했어요.`,
+    });
+  }
+  // Skip the count when every feed failed; the error above says it all.
+  if (result.failedSources.length < 2) {
+    notices.push({
+      tone: "info",
+      text:
+        result.added > 0
+          ? `새 뉴스 ${result.added}개를 가져왔어요.`
+          : "지난 24시간 동안 새로 올라온 뉴스가 없어요.",
+    });
+  }
+  return notices;
+}
 
 function matches(article: ArticleCard, filter: Filter) {
   if (filter === ALL) return true;
@@ -35,6 +66,24 @@ export function DashboardView({
   categories: CategoryTab[];
 }) {
   const [filter, setFilter] = useState<Filter>(ALL);
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [fetching, startFetching] = useTransition();
+
+  function handleFetch() {
+    setNotices([]);
+    startFetching(async () => {
+      try {
+        setNotices(toNotices(await fetchNews()));
+      } catch {
+        setNotices([
+          {
+            tone: "error",
+            text: "서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.",
+          },
+        ]);
+      }
+    });
+  }
 
   const tabs: { label: string; filter: Filter }[] = [
     { label: "전체", filter: ALL },
@@ -55,16 +104,25 @@ export function DashboardView({
             {visible.length}개
           </span>
         </div>
-        {/* Wired up in stage 3 (RSS + Claude). */}
         <button
           type="button"
-          disabled
-          title="곧 사용할 수 있어요"
+          onClick={handleFetch}
+          disabled={fetching}
           className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          뉴스 가져오기
+          {fetching ? "가져오는 중…" : "뉴스 가져오기"}
         </button>
       </div>
+
+      {notices.length > 0 && (
+        <div role="status" className="mb-4 space-y-2">
+          {notices.map((notice) => (
+            <p key={notice.text} className={NOTICE_STYLES[notice.tone]}>
+              {notice.text}
+            </p>
+          ))}
+        </div>
+      )}
 
       <nav
         aria-label="카테고리"
