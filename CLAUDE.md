@@ -34,7 +34,7 @@ The `dev`/`build`/`start` scripts run Next through `node --use-system-ca`. This 
 
 ## Screens (PRD §3)
 
-Visual design (colors, typography, card/button/badge styles) is in **`DESIGN.md`**. Follow it for every new screen. The dev-only `/preview` page renders the main page's real components with sample data, without sign-in.
+Visual design (colors, typography, card/button/badge styles) is in **`DESIGN.md`**. Follow it for every new screen. **`ui.md`** shows how screens are put together with Tailwind: the dashboard layout, the category bar above the card grid with its "+ 카테고리 추가" button at the end, the header, cards and status messages. Follow it when you build or change a screen. If the two files disagree, `DESIGN.md` wins; update `ui.md` to match. The dev-only `/preview` page renders the main page's real components with sample data, without sign-in.
 
 - **Login:** Clerk sign-in/sign-up UI. Every other page requires auth (F1). Unauthenticated requests redirect to login.
 - **Main (news list):** header (app name, category management link, Notion connection status, user menu), "뉴스 가져오기" button, filter tabs **전체 / one tab per category / 미분류** (F5), responsive card grid sorted newest first. Each card shows: Korean title, Korean summary, source (TechCrunch / The Verge), published date, category badge, original link (new tab), and a "Notion 저장" button that becomes "저장됨" plus a Notion link once saved.
