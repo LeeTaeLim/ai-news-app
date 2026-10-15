@@ -48,6 +48,12 @@ function toNotices(result: FetchNewsResult): Notice[] {
           : "지난 24시간 동안 새로 올라온 뉴스가 없어요.",
     });
   }
+  if (result.untranslated > 0) {
+    notices.push({
+      tone: "error",
+      text: `${result.untranslated}개는 번역하지 못해 원문 그대로 미분류로 저장했어요.`,
+    });
+  }
   return notices;
 }
 
@@ -124,7 +130,7 @@ export function DashboardView({
           disabled={fetching}
           className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {fetching ? "가져오는 중…" : "뉴스 가져오기"}
+          {fetching ? "가져와서 번역하는 중…" : "뉴스 가져오기"}
         </button>
       </div>
 

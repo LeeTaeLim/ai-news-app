@@ -17,7 +17,7 @@ const FEEDS: { source: Source; label: string; url: string }[] = [
   },
 ];
 
-// Length of the temporary summary until Claude writes summaryKo.
+// Length of the fallback summary, stored when Claude fails.
 const SUMMARY_MAX_LENGTH = 300;
 
 export type FeedItem = {
@@ -26,8 +26,10 @@ export type FeedItem = {
   link: string;
   author: string | null;
   publishedAt: Date;
-  // RSS excerpt, stored as summaryKo until the Claude step exists.
+  // Short RSS excerpt, stored as summaryKo when Claude fails.
   summary: string;
+  // Plain-text article content from the feed, sent to Claude.
+  body: string;
 };
 
 type ParsedItem = {
@@ -91,7 +93,8 @@ function toFeedItem(source: Source, raw: ParsedItem): FeedItem | null {
     link,
     author,
     publishedAt,
-    summary: toPlainSummary(raw.summary || raw.contentSnippet || ""),
+    summary: truncate(toPlainText(raw.summary || raw.contentSnippet || "")),
+    body: toPlainText(raw.contentSnippet || raw.summary || ""),
   };
 }
 
@@ -131,11 +134,14 @@ function decodeEntities(text: string): string {
   });
 }
 
-function toPlainSummary(text: string): string {
-  const plain = decodeEntities(text.replace(/<[^>]*>/g, " "))
+function toPlainText(text: string): string {
+  return decodeEntities(text.replace(/<[^>]*>/g, " "))
     .replace(/\s+/g, " ")
     .trim();
-  return plain.length > SUMMARY_MAX_LENGTH
-    ? `${plain.slice(0, SUMMARY_MAX_LENGTH).trimEnd()}…`
-    : plain;
+}
+
+function truncate(text: string): string {
+  return text.length > SUMMARY_MAX_LENGTH
+    ? `${text.slice(0, SUMMARY_MAX_LENGTH).trimEnd()}…`
+    : text;
 }

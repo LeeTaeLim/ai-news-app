@@ -2,16 +2,25 @@
 
 import { refresh } from "next/cache";
 import { requireUserId } from "@/lib/auth";
-import { insertNewArticles } from "@/lib/articles";
+import { filterNewItems, insertNewArticles } from "@/lib/articles";
+import { getCategoryOptions } from "@/lib/categories";
 import { fetchRecentItems } from "@/lib/rss";
+import { processArticles } from "@/lib/translate";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type FetchNewsResult =
-  | { ok: true; added: number; failedSources: string[] }
+  | {
+      ok: true;
+      added: number;
+      // Stored with the original English text because Claude failed.
+      untranslated: number;
+      failedSources: string[];
+    }
   | { ok: false; error: string };
 
-// "뉴스 가져오기": stores articles published in the last 24 hours.
+// "뉴스 가져오기": translates, summarizes and categorizes articles published in
+// the last 24 hours that this user hasn't stored yet, then stores them.
 export async function fetchNews(): Promise<FetchNewsResult> {
   // Outside the try: a signed-out user's redirect must not be caught.
   const userId = await requireUserId();
@@ -19,9 +28,15 @@ export async function fetchNews(): Promise<FetchNewsResult> {
   try {
     const since = new Date(Date.now() - DAY_MS);
     const { items, failedSources } = await fetchRecentItems(since);
-    const added = await insertNewArticles(userId, items);
+    const [newItems, categories] = await Promise.all([
+      filterNewItems(userId, items),
+      getCategoryOptions(userId),
+    ]);
+    const processed = await processArticles(newItems, categories);
+    const added = await insertNewArticles(userId, processed);
+    const untranslated = processed.filter((p) => !p.translated).length;
     refresh();
-    return { ok: true, added, failedSources };
+    return { ok: true, added, untranslated, failedSources };
   } catch (error) {
     console.error("fetchNews failed", error);
     return {

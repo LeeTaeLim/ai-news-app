@@ -1,8 +1,9 @@
 import "server-only";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { articles, categories } from "@/db/schema";
 import type { FeedItem } from "@/lib/rss";
+import type { ProcessedArticle } from "@/lib/translate";
 
 export type ArticleCard = {
   id: string;
@@ -35,28 +36,49 @@ export async function getArticleCards(userId: string): Promise<ArticleCard[]> {
     .orderBy(desc(articles.publishedAt));
 }
 
-// Stores feed items for the user and returns how many were new. Links already
-// stored for this user are skipped by the unique (userId, link) constraint.
-// Until the Claude step exists, titleKo/summaryKo hold the original title and
-// RSS excerpt, and every article is 미분류.
-export async function insertNewArticles(
+// Feed items whose link this user hasn't stored yet. Runs before Claude so an
+// article is never processed twice (cost rule).
+export async function filterNewItems(
   userId: string,
   items: FeedItem[],
+): Promise<FeedItem[]> {
+  if (items.length === 0) return [];
+  const stored = await db
+    .select({ link: articles.link })
+    .from(articles)
+    .where(
+      and(
+        eq(articles.userId, userId),
+        inArray(
+          articles.link,
+          items.map((item) => item.link),
+        ),
+      ),
+    );
+  const storedLinks = new Set(stored.map((row) => row.link));
+  return items.filter((item) => !storedLinks.has(item.link));
+}
+
+// Stores Claude's results for the user and returns how many rows were added.
+// The unique (userId, link) constraint still guards against a concurrent fetch.
+export async function insertNewArticles(
+  userId: string,
+  processed: ProcessedArticle[],
 ): Promise<number> {
-  if (items.length === 0) return 0;
+  if (processed.length === 0) return 0;
   const inserted = await db
     .insert(articles)
     .values(
-      items.map((item) => ({
+      processed.map(({ item, titleKo, summaryKo, categoryId }) => ({
         userId,
         source: item.source,
         originalTitle: item.originalTitle,
         link: item.link,
         author: item.author,
         publishedAt: item.publishedAt,
-        titleKo: item.originalTitle,
-        summaryKo: item.summary,
-        categoryId: null,
+        titleKo,
+        summaryKo,
+        categoryId,
       })),
     )
     .onConflictDoNothing({ target: [articles.userId, articles.link] })
