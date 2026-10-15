@@ -1,4 +1,5 @@
 import type { ArticleCard } from "@/lib/articles";
+import { NotionSaveButton } from "./notion-save-button";
 
 const SOURCE_LABELS: Record<ArticleCard["source"], string> = {
   techcrunch: "TechCrunch",
@@ -53,26 +54,10 @@ export function NewsCard({ article }: { article: ArticleCard }) {
         >
           원문 보기 ↗
         </a>
-        {article.notionPageUrl ? (
-          <a
-            href={article.notionPageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900"
-          >
-            ✓ 저장됨
-          </a>
-        ) : (
-          // Wired up in stage 5 (Notion OAuth + MCP save).
-          <button
-            type="button"
-            disabled
-            title="Notion 연결 후 사용할 수 있어요"
-            className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Notion 저장
-          </button>
-        )}
+        <NotionSaveButton
+          articleId={article.id}
+          notionPageUrl={article.notionPageUrl}
+        />
       </div>
     </article>
   );

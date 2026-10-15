@@ -70,7 +70,7 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 │                                 │
 │ 한국어 요약 3~4문장               │
 │ ─────────────────────────────── │
-│ 원문 보기 ↗          [Notion 저장] │
+│ 원문 보기 ↗          [뉴스 저장]   │
 └───────────────────────────────┘
 ```
 
@@ -90,11 +90,11 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 
 | 종류 | 스타일 | 예 |
 |---|---|---|
-| 주 버튼 | `rounded-lg bg-blue-600 text-white hover:bg-blue-700`, 작게 `px-3 py-1.5` / 크게 `px-5 py-2.5` | Notion 저장, 뉴스 가져오기 |
+| 주 버튼 | `rounded-lg bg-blue-600 text-white hover:bg-blue-700`, 작게 `px-3 py-1.5` / 크게 `px-5 py-2.5` | 뉴스 저장, 뉴스 가져오기 |
 | 보조 버튼 | `border border-blue-200 text-blue-700 hover:bg-blue-50` | 회원가입, 취소 |
 | 상태 표시 버튼 | `bg-blue-50 text-blue-700 hover:bg-blue-100` | ✓ 저장됨 (Notion 페이지 링크) |
 | 텍스트 링크 | `text-blue-600 hover:underline` + 외부 링크는 `↗` | 원문 보기 |
-| 비활성 | `disabled:opacity-50 disabled:cursor-not-allowed` | 연결 전 Notion 저장 |
+| 비활성 | `disabled:opacity-50 disabled:cursor-not-allowed` | 저장 중인 뉴스 저장 버튼 |
 
 - 로그인 화면(`SignInGate`)의 버튼만 `rounded-full`이고, 앱 안의 버튼은 `rounded-lg`이다.
 - 외부 링크는 모두 `target="_blank" rel="noopener noreferrer"`.
@@ -113,7 +113,7 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 ## 7. 문구 톤
 
 - UI 문구는 한국어 존댓말 해요체: "아직 저장된 뉴스가 없어요.", "Notion 연결 후 사용할 수 있어요".
-- 버튼은 짧은 명사형/동사형: "뉴스 가져오기", "Notion 저장", "원문 보기".
+- 버튼은 짧은 명사형/동사형: "뉴스 가져오기", "뉴스 저장", "원문 보기".
 
 ## 8. 다음 단계 화면에 적용할 때
 

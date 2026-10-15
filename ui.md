@@ -194,7 +194,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 │                                   │
 │ 한국어 요약 3~4문장                 │
 │ ───────────────────────────────── │
-│ 원문 보기 ↗            [Notion 저장] │
+│ 원문 보기 ↗            [뉴스 저장]   │
 └─────────────────────────────────┘
 ```
 
@@ -244,7 +244,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 | 상태 | 모양 |
 |---|---|
 | 원문 보기 | 파란 글자 링크 `text-sm font-medium text-blue-600 hover:underline` |
-| Notion 저장 | 파란 버튼 `rounded-lg bg-blue-600 px-3 py-1.5 text-white` |
+| 뉴스 저장 | 파란 버튼 `rounded-lg bg-blue-600 px-3 py-1.5 text-white` |
 | 저장 중… | 같은 버튼, 비활성화 `disabled:opacity-50` |
 | ✓ 저장됨 | 연한 파란 버튼 `rounded-lg bg-blue-50 px-3 py-1.5 text-blue-700` (Notion 페이지 링크) |
 

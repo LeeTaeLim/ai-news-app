@@ -2,8 +2,14 @@
 
 import { refresh } from "next/cache";
 import { requireUserId } from "@/lib/auth";
-import { filterNewItems, insertNewArticles } from "@/lib/articles";
+import {
+  filterNewItems,
+  getArticleCard,
+  insertNewArticles,
+  setNotionPageUrl,
+} from "@/lib/articles";
 import { getCategoryOptions } from "@/lib/categories";
+import { createNotionPage } from "@/lib/notion";
 import { fetchRecentItems } from "@/lib/rss";
 import { processArticles } from "@/lib/translate";
 
@@ -43,5 +49,32 @@ export async function fetchNews(): Promise<FetchNewsResult> {
       ok: false,
       error: "뉴스를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
     };
+  }
+}
+
+export type SaveToNotionResult =
+  | { ok: true; notionPageUrl: string }
+  | { ok: false; error: string };
+
+// "뉴스 저장": adds the article to the Notion database and records the page URL.
+export async function saveToNotion(
+  articleId: string,
+): Promise<SaveToNotionResult> {
+  const userId = await requireUserId();
+
+  try {
+    const article = await getArticleCard(userId, articleId);
+    if (!article) return { ok: false, error: "뉴스를 찾을 수 없어요." };
+    // Already saved: never create a second page.
+    if (article.notionPageUrl) {
+      return { ok: true, notionPageUrl: article.notionPageUrl };
+    }
+    const notionPageUrl = await createNotionPage(article);
+    await setNotionPageUrl(userId, articleId, notionPageUrl);
+    refresh();
+    return { ok: true, notionPageUrl };
+  } catch (error) {
+    console.error(`saveToNotion failed: ${articleId}`, error);
+    return { ok: false, error: "Notion에 저장하지 못했어요. 다시 시도해 주세요." };
   }
 }
