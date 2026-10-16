@@ -38,6 +38,11 @@ export async function getArticleCards(userId: string): Promise<ArticleCard[]> {
     .orderBy(desc(articles.publishedAt));
 }
 
+// How many articles the user has stored, counted in the DB.
+export async function countArticles(userId: string): Promise<number> {
+  return db.$count(articles, eq(articles.userId, userId));
+}
+
 // One of the user's articles, or undefined if it doesn't exist or isn't theirs.
 export async function getArticleCard(
   userId: string,

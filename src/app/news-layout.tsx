@@ -45,6 +45,15 @@ export function EmptyState({ title, hint }: { title: string; hint?: string }) {
   );
 }
 
+// Total stored articles, regardless of the selected tab or search.
+export function NewsCountBadge({ count }: { count: number }) {
+  return (
+    <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium whitespace-nowrap text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+      총 {count}개의 뉴스
+    </span>
+  );
+}
+
 export function NewsCardGrid({ articles }: { articles: ArticleCard[] }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -67,11 +76,11 @@ export function NewsGrid({ articles }: { articles: ArticleCard[] }) {
 
   return (
     <>
-      <div className="mb-6 flex items-baseline gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-2">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">
           최신 뉴스
         </h2>
-        <span className="text-sm text-slate-500">{articles.length}개</span>
+        <NewsCountBadge count={articles.length} />
       </div>
       <NewsCardGrid articles={articles} />
     </>

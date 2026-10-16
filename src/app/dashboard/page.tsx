@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { UserButton } from "@clerk/nextjs";
 import { requireUserId } from "@/lib/auth";
-import { getArticleCards } from "@/lib/articles";
+import { countArticles, getArticleCards } from "@/lib/articles";
 import { getCategoryTabs } from "@/lib/categories";
 import { NewsShell } from "../news-layout";
 import { DashboardView } from "./dashboard-view";
@@ -30,9 +30,16 @@ export default function DashboardPage() {
 // Reads the session, so it must stay behind the Suspense boundary (cacheComponents).
 async function DashboardContent() {
   const userId = await requireUserId();
-  const [articles, categories] = await Promise.all([
+  const [articles, categories, totalCount] = await Promise.all([
     getArticleCards(userId),
     getCategoryTabs(userId),
+    countArticles(userId),
   ]);
-  return <DashboardView articles={articles} categories={categories} />;
+  return (
+    <DashboardView
+      articles={articles}
+      categories={categories}
+      totalCount={totalCount}
+    />
+  );
 }

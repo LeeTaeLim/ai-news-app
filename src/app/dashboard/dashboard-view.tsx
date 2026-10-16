@@ -4,7 +4,7 @@ import { useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import type { ArticleCard } from "@/lib/articles";
 import type { CategoryTab } from "@/lib/categories";
-import { EmptyState, NewsCardGrid } from "../news-layout";
+import { EmptyState, NewsCardGrid, NewsCountBadge } from "../news-layout";
 import { fetchNews, type FetchNewsResult } from "./actions";
 
 // Tab key: "all", "uncategorized", or "category:<name>" (names are unique per user).
@@ -79,9 +79,12 @@ function matches(article: ArticleCard, filter: Filter) {
 export function DashboardView({
   articles,
   categories,
+  totalCount,
 }: {
   articles: ArticleCard[];
   categories: CategoryTab[];
+  // From a DB count, so it's the true total even if the list is trimmed later.
+  totalCount: number;
 }) {
   const [filter, setFilter] = useState<Filter>(ALL);
   const [page, setPage] = useState(1);
@@ -112,7 +115,10 @@ export function DashboardView({
 
   const tabs: { label: string; filter: Filter }[] = [
     { label: "전체", filter: ALL },
-    ...categories.map((c) => ({ label: c.name, filter: categoryFilter(c.name) })),
+    ...categories.map((c) => ({
+      label: c.name,
+      filter: categoryFilter(c.name),
+    })),
     { label: "미분류", filter: UNCATEGORIZED },
   ];
 
@@ -143,13 +149,11 @@ export function DashboardView({
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-baseline gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">
             최신 뉴스
           </h2>
-          <span className="text-sm text-slate-500 dark:text-slate-400">
-            {visible.length}개
-          </span>
+          <NewsCountBadge count={totalCount} />
         </div>
         <button
           type="button"
@@ -179,7 +183,9 @@ export function DashboardView({
           <ul className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
             {tabs.map((tab) => {
               const selected = tab.filter === filter;
-              const count = searched.filter((a) => matches(a, tab.filter)).length;
+              const count = searched.filter((a) =>
+                matches(a, tab.filter),
+              ).length;
               return (
                 <li key={tab.filter}>
                   <button
@@ -204,7 +210,7 @@ export function DashboardView({
             </li>
           </ul>
         </nav>
-  
+
         <form
           role="search"
           onSubmit={handleSearch}
@@ -287,10 +293,7 @@ const PAGE_CURRENT = `${PAGE_BUTTON} bg-blue-600 text-white`;
 
 // Page 50 of 100 → 1 … 48 49 50 51 52 … 100. A "…" appears only where the
 // numbers skip; next to page 1 or the last page they simply join up.
-function pageNumbers(
-  page: number,
-  pageCount: number,
-): (number | "gap")[] {
+function pageNumbers(page: number, pageCount: number): (number | "gap")[] {
   const start = Math.max(2, page - PAGE_SIBLINGS);
   const end = Math.min(pageCount - 1, page + PAGE_SIBLINGS);
   const result: (number | "gap")[] = [1];
