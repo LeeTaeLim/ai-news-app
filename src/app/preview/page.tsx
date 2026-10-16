@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ArticleCard } from "@/lib/articles";
-import { NewsGrid, NewsShell } from "../news-layout";
+import { NewsCardGridSkeleton, NewsGrid, NewsShell } from "../news-layout";
 
 // Dev-only design preview: the main page's real components with sample data,
 // viewable without signing in. Returns 404 in production builds.
@@ -9,7 +9,8 @@ const SAMPLE_ARTICLES: ArticleCard[] = [
   {
     id: "sample-1",
     source: "techcrunch",
-    titleKo: "케스트럴 랩스, 코딩 벤치마크 1위 오픈 웨이트 모델 '케스트럴-3' 공개",
+    titleKo:
+      "케스트럴 랩스, 코딩 벤치마크 1위 오픈 웨이트 모델 '케스트럴-3' 공개",
     summaryKo:
       "AI 스타트업 케스트럴 랩스가 오픈 웨이트 언어 모델 '케스트럴-3'를 공개했다. 이 모델은 주요 코딩 벤치마크에서 기존 공개 모델들을 앞서는 성능을 기록했다고 회사는 밝혔다. 가중치는 상업적 이용이 가능한 라이선스로 배포되며, 소형 버전은 일반 노트북에서도 실행할 수 있다. 회사는 학습 데이터 구성과 평가 방법을 담은 기술 보고서도 함께 공개했다.",
     link: "https://techcrunch.com/2026/10/14/kestrel-labs-releases-kestrel-3-open-weight-model/",
@@ -31,13 +32,15 @@ const SAMPLE_ARTICLES: ArticleCard[] = [
   {
     id: "sample-3",
     source: "techcrunch",
-    titleKo: "벡터라인, 엣지 기기용 추론 칩 개발 위해 2억 1천만 달러 시리즈 C 유치",
+    titleKo:
+      "벡터라인, 엣지 기기용 추론 칩 개발 위해 2억 1천만 달러 시리즈 C 유치",
     summaryKo:
       "AI 반도체 스타트업 벡터라인이 2억 1천만 달러 규모의 시리즈 C 투자를 유치했다. 회사는 스마트폰, 카메라, 산업용 장비 같은 엣지 기기에서 AI 모델을 저전력으로 실행하는 추론 전용 칩을 개발하고 있다. 이번 자금은 양산 준비와 소프트웨어 개발 도구 확충에 쓰일 예정이다. 업계에서는 클라우드 의존도를 낮추려는 수요가 커지면서 엣지 AI 칩 시장 경쟁이 치열해지고 있다고 본다.",
     link: "https://techcrunch.com/2026/10/13/vectorline-raises-210m-series-c-edge-inference-chips/",
     publishedAt: new Date("2026-10-13T16:00:00Z"),
     categoryName: "투자/비즈니스",
-    notionPageUrl: "https://www.notion.so/sample-vectorline-series-c-0000000000000000",
+    notionPageUrl:
+      "https://www.notion.so/sample-vectorline-series-c-0000000000000000",
   },
   {
     id: "sample-4",
@@ -76,6 +79,10 @@ export default function PreviewPage() {
       }
     >
       <NewsGrid articles={SAMPLE_ARTICLES} />
+      <h2 className="mt-12 mb-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+        로딩 상태 미리보기
+      </h2>
+      <NewsCardGridSkeleton count={3} />
     </NewsShell>
   );
 }

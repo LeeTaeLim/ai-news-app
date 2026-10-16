@@ -288,7 +288,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 
 | 상태 | 모양 | 예시 문구 |
 |---|---|---|
-| 로딩 | 회색 글자 `text-slate-500` | 뉴스를 불러오는 중… |
+| 로딩 | 회색 글자 `text-slate-500` + 아래에 스켈레톤 카드 그리드(`NewsCardGridSkeleton`) | 뉴스를 불러오는 중… |
 | 빈 화면 | 점선 박스 `rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center` | 아직 저장된 뉴스가 없어요. |
 | 성공 안내 | 파란 박스 `rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-700` | 새 뉴스 5개를 가져왔어요. |
 | 오류 | 빨간 박스 `rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700` | The Verge 뉴스를 가져오지 못했어요. |

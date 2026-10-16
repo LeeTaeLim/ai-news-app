@@ -4,7 +4,7 @@ import { UserButton } from "@clerk/nextjs";
 import { requireUserId } from "@/lib/auth";
 import { countArticles, getArticleCards } from "@/lib/articles";
 import { getCategoryTabs } from "@/lib/categories";
-import { NewsShell } from "../news-layout";
+import { NewsCardGridSkeleton, NewsShell } from "../news-layout";
 import { DashboardView } from "./dashboard-view";
 
 export const metadata: Metadata = {
@@ -14,13 +14,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <NewsShell userMenu={<UserButton />}>
-      <Suspense
-        fallback={
-          <p className="text-slate-500 dark:text-slate-400">
-            뉴스를 불러오는 중…
-          </p>
-        }
-      >
+      <Suspense fallback={<NewsCardGridSkeleton />}>
         <DashboardContent />
       </Suspense>
     </NewsShell>
