@@ -35,7 +35,7 @@ export function DeleteNewsButton({
         disabled={deleting}
         aria-label={`‘${title}’ 뉴스 삭제`}
         title="뉴스 삭제"
-        className="-mt-1 -mr-1 flex size-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-500 dark:hover:bg-red-950 dark:hover:text-red-400"
+        className="-mt-1 -mr-1 flex size-8 items-center justify-center rounded-lg text-slate-300 transition group-focus-within:text-slate-400 group-hover:text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-600 dark:group-focus-within:text-slate-500 dark:group-hover:text-slate-500 dark:hover:bg-red-950 dark:hover:text-red-400"
       >
         <svg
           aria-hidden

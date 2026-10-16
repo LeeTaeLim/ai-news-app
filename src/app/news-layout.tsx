@@ -73,10 +73,12 @@ function NewsCardSkeleton() {
       aria-hidden
       className="flex animate-pulse flex-col motion-reduce:animate-none rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
-      <div className="h-6 w-24 rounded-full bg-slate-100 dark:bg-slate-800" />
+      <div className="flex items-center gap-2 pt-1">
+        <div className="size-5 rounded-md bg-slate-100 dark:bg-slate-800" />
+        <div className={`h-3.5 w-40 ${SKELETON_BAR}`} />
+      </div>
       <div className={`mt-4 h-5 w-11/12 ${SKELETON_BAR}`} />
       <div className={`mt-2 h-5 w-2/3 ${SKELETON_BAR}`} />
-      <div className={`mt-3 h-4 w-40 ${SKELETON_BAR}`} />
       <div className="mt-5 space-y-3">
         <div className={`h-3.5 ${SKELETON_BAR}`} />
         <div className={`h-3.5 ${SKELETON_BAR}`} />
@@ -84,8 +86,11 @@ function NewsCardSkeleton() {
         <div className={`h-3.5 w-3/5 ${SKELETON_BAR}`} />
       </div>
       <div className="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
-        <div className={`h-4 w-20 ${SKELETON_BAR}`} />
-        <div className="h-8 w-20 rounded-lg bg-slate-100 dark:bg-slate-800" />
+        <div className="h-5 w-20 rounded-full bg-slate-100 dark:bg-slate-800" />
+        <div className="flex items-center gap-3">
+          <div className={`h-4 w-16 ${SKELETON_BAR}`} />
+          <div className="h-8 w-20 rounded-lg bg-slate-100 dark:bg-slate-800" />
+        </div>
       </div>
     </div>
   );

@@ -52,8 +52,10 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 |---|---|
 | 앱 이름 | `text-lg font-bold` |
 | 섹션 제목 | `text-xl font-bold` |
-| 카드 제목 | `text-lg font-semibold leading-snug` |
+| 카드 머리글 (출처·날짜) | `text-[13px]` |
+| 카드 제목 | `text-lg font-semibold leading-snug tracking-tight` |
 | 카드 요약 | `text-[15px] leading-7` |
+| 카드 카테고리 배지 | `text-xs font-medium` |
 | 메타 정보, 버튼, 탭 | `text-sm` (버튼과 탭은 `font-medium`) |
 
 ### 문구
@@ -218,13 +220,12 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 
 ```
 ┌─────────────────────────────────┐
-│ [카테고리]                     ✕ │
+│ [TC] TechCrunch · 2026년 10월 14일 ✕ │
 │ 한국어 제목                        │
-│ TechCrunch · 2026년 10월 14일     │
 │                                   │
 │ 한국어 요약 3~4문장                 │
 │ ───────────────────────────────── │
-│ 원문 보기 ↗            [뉴스 저장]   │
+│ [카테고리]    원문 보기 ↗ [뉴스 저장] │
 └─────────────────────────────────┘
 ```
 
@@ -257,19 +258,25 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 
 | 순서 | 요소 | 클래스 |
 |---|---|---|
-| — | 카드 | `flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm` |
-| 1 | 윗줄 | `flex items-start justify-between gap-3`: 왼쪽 카테고리 배지, 오른쪽 삭제(✕) 버튼 |
-| 1-1 | 카테고리 배지 | `rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700` |
-| 2 | 제목 | `mt-4 text-lg font-semibold leading-snug break-keep text-slate-900` |
-| 3 | 출처 · 날짜 | `mt-2 text-sm text-slate-500` |
-| 4 | 요약 | `mt-4 text-[15px] leading-7 break-keep text-slate-600` |
-| 5 | 하단 영역 | `mt-auto flex items-center justify-between border-t border-slate-100 pt-4` |
+| — | 카드 | `group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm` |
+| — | 강조선 | `absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-blue-600 group-hover:scale-x-100` |
+| 1 | 머리글 | `flex items-start justify-between gap-3`: 왼쪽 출처·날짜, 오른쪽 삭제(✕) 버튼 |
+| 1-1 | 출처 · 날짜 | `text-[13px] text-slate-500`: 모노그램(`TC`/`V`, `rounded-md bg-slate-100`) + 출처명 `font-semibold text-slate-700` + `·` + 날짜 `tabular-nums` |
+| 2 | 제목 | `mt-3 text-lg font-semibold leading-snug tracking-tight text-pretty break-keep text-slate-900` |
+| 3 | 요약 | `mt-3 text-[15px] leading-7 break-keep text-slate-600` |
+| 4 | 하단 영역 | `mt-auto flex items-center justify-between border-t border-slate-100 pt-4`: 왼쪽 카테고리 배지, 오른쪽 원문 보기 + 저장 버튼 |
+| 4-1 | 카테고리 배지 | `min-w-0 truncate rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700` |
 
 - **미분류 배지**는 회색입니다: `bg-slate-100 text-slate-600`
-- **hover** 시 살짝 떠오릅니다: `transition hover:-translate-y-0.5 hover:shadow-md hover:border-blue-200`
+- **hover와 키보드 포커스**에 같은 반응을 줍니다(`hover:`와 `focus-within:` 짝).
+  - 카드: `transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.06] hover:border-slate-300`
+  - 위쪽 파란 강조선이 왼쪽에서 펼쳐집니다.
+  - 삭제 버튼이 `slate-300`에서 `slate-400`으로 또렷해집니다.
+  - "원문 보기"의 `↗`가 오른쪽 위로 살짝 움직입니다(`group/link`).
+  - `motion-reduce:`일 때는 이동과 전환을 끕니다.
 - **날짜**는 한국 시간 기준 "2026년 10월 14일" 형식입니다.
 - **하단 영역**은 `mt-auto`로 항상 카드 바닥에 붙습니다.
-- **삭제(✕) 버튼**: `size-8 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600`이고, 아이콘은 `size-4` 크기의 선 두 개입니다. 누르면 확인 없이 바로 DB에서 삭제되고 카드가 목록에서 사라집니다. 삭제하는 동안에는 `disabled:opacity-50`로 비활성화하고, 실패하면 버튼 아래에 `text-xs text-red-600` 안내를 띄웁니다. `aria-label`에는 뉴스 제목을 넣습니다.
+- **삭제(✕) 버튼**: `size-8 rounded-lg text-slate-300 group-hover:text-slate-400 hover:bg-red-50 hover:text-red-600`이고, 아이콘은 `size-4` 크기의 선 두 개입니다. 누르면 확인 없이 바로 DB에서 삭제되고 카드가 목록에서 사라집니다. 삭제하는 동안에는 `disabled:opacity-50`로 비활성화하고, 실패하면 버튼 아래에 `text-xs text-red-600` 안내를 띄웁니다. `aria-label`에는 뉴스 제목을 넣습니다.
 
 ### 하단 버튼
 

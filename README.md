@@ -116,3 +116,8 @@ src/
 └─ proxy.ts                   # Clerk 미들웨어
 drizzle/                      # 마이그레이션 SQL
 ```
+
+## 사용한 플러그인
+
+- **Frontend Design**: UI 디자인 품질 향상
+- **commit-commands**: 깃 워크플로 자동화

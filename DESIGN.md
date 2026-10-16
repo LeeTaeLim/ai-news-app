@@ -39,8 +39,10 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 |---|---|
 | 앱 이름 (헤더) | `text-lg font-bold` |
 | 섹션 제목 ("최신 뉴스") | `text-xl font-bold` + 옆에 개수 `text-sm text-slate-500` |
-| 카드 제목 | `text-lg font-semibold leading-snug` |
+| 카드 머리글 (출처·날짜) | `text-[13px]`, 출처명 `font-semibold`, 날짜 `tabular-nums` |
+| 카드 제목 | `text-lg font-semibold leading-snug tracking-tight text-pretty` |
 | 카드 본문 (요약) | `text-[15px] leading-7` |
+| 카드 카테고리 배지 | `text-xs font-medium` |
 | 메타 정보, 배지, 버튼, 링크 | `text-sm` (배지·버튼·링크는 `font-medium`) |
 
 ## 4. 레이아웃
@@ -64,24 +66,29 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 
 ```
 ┌───────────────────────────────┐
-│ [카테고리 배지]                  │
+│ [TC] TechCrunch · 2026년 10월 14일 ✕ │
 │ 한국어 제목 (최대 2~3줄)          │
-│ TechCrunch · 2026년 10월 14일   │
 │                                 │
 │ 한국어 요약 3~4문장               │
 │ ─────────────────────────────── │
-│ 원문 보기 ↗          [뉴스 저장]   │
+│ [카테고리]     원문 보기 ↗ [뉴스 저장] │
 └───────────────────────────────┘
 ```
 
-- 컨테이너: `rounded-2xl border p-6 shadow-sm`, 흰 배경.
-- 정보 순서(고정): 배지 → 제목(`mt-4`) → 출처·날짜(`mt-2`) → 요약(`mt-4`) → 구분선 + 액션(`pt-4`).
-- 출처 표기: `TechCrunch`, `The Verge`. 출처와 날짜 사이는 가운뎃점 `·`.
+- 컨테이너: `rounded-2xl border p-6 shadow-sm`, 흰 배경, `relative overflow-hidden`(hover 강조선용).
+- 위계: **어디서·언제(머리글) → 무엇(제목) → 내용(요약) → 분류와 행동(하단)**. 눈이 위에서 아래로 한 번만 내려가게 한다.
+- 정보 순서(고정): 출처·날짜 머리글 + 삭제 버튼 → 제목(`mt-3`) → 요약(`mt-3`) → 구분선 + 카테고리 배지·액션(`pt-4`).
+- 출처 머리글: 모노그램(`TC`, `V` — `h-5 min-w-5 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600`) + 출처명(`slate-700 font-semibold`) + 가운뎃점(`slate-300`) + 날짜(`slate-500`). 출처 표기는 `TechCrunch`, `The Verge`이고, 출처마다 다른 색을 쓰지 않는다.
 - 날짜: 한국 시간(`Asia/Seoul`) 기준 `2026년 10월 14일` 형식, `<time dateTime>`으로 감싼다.
-- hover: 살짝 떠오름(`-translate-y-0.5`), 그림자 `shadow-md`, 테두리 `blue-200`.
+- hover와 키보드 포커스(`focus-within`)에 같은 반응을 준다. 200ms `ease-out`.
+  - 카드가 살짝 떠오름(`-translate-y-0.5`), 그림자 `shadow-lg shadow-slate-900/[0.06]`, 테두리 `slate-300`(다크 `slate-700`).
+  - 카드 위쪽의 `h-0.5 bg-blue-600` 강조선이 왼쪽에서 펼쳐진다(`scale-x-0` → `scale-x-100`, 300ms).
+  - 삭제 버튼은 평소 `slate-300`으로 물러나 있다가 카드 hover 시 `slate-400`이 된다.
+  - "원문 보기"의 `↗`가 링크 hover 시 오른쪽 위로 살짝 움직인다.
+  - 움직임 줄이기 설정이면(`motion-reduce:`) 이동과 전환을 끈다.
 
 ### 카테고리 배지
-- `rounded-full px-2.5 py-0.5 text-sm font-medium`, 카드 왼쪽 위에 단독 배치(`self-start`).
+- `rounded-full px-2.5 py-0.5 text-xs font-medium`, 카드 하단 왼쪽에 둔다. 이름이 길면 `truncate`로 자르고 `title`에 전체 이름을 넣는다.
 - 카테고리 있음: 파란 배지(`blue-50` 바탕, `blue-700` 글자, `blue-100` 안쪽 테두리).
 - 미분류(`categoryId = null`): 회색 배지(`slate-100` 바탕, `slate-600` 글자). 테두리 없음.
 - 카테고리마다 다른 색을 주지 않는다. 사용자가 카테고리를 자유롭게 추가하므로 색을 하나로 통일한다.
@@ -106,7 +113,7 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 ### 로딩 상태
 - `slate-500` 텍스트("불러오는 중…")를 쓴다. 문구는 "~하는 중…"으로 통일.
 - 뉴스 카드 목록을 처음 불러올 때는 문구 아래에 **스켈레톤 카드**(`NewsCardGridSkeleton`, 기본 6개)를 같은 그리드로 보여 준다.
-  - 카드와 같은 박스(`rounded-2xl border p-6 shadow-sm`)에 `animate-pulse`(움직임 줄이기 설정이면 `motion-reduce:animate-none`으로 멈춤). 배지·제목·출처·요약·하단 영역 자리를 회색 막대(`slate-200` / 다크 `slate-800`)로 채운다.
+  - 카드와 같은 박스(`rounded-2xl border p-6 shadow-sm`)에 `animate-pulse`(움직임 줄이기 설정이면 `motion-reduce:animate-none`으로 멈춤). 출처 머리글·제목·요약·하단 영역(배지, 링크, 버튼) 자리를 회색 막대(`slate-200` / 다크 `slate-800`)로 채운다.
   - 배지와 버튼 자리는 더 연하게 `slate-100`(다크 `slate-800`). 파란색은 쓰지 않는다.
   - 전체를 `role="status"`로 감싸고, 막대들은 `aria-hidden`이다.
 

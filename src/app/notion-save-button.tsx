@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { saveToNotion } from "./dashboard/actions";
 
-const BUTTON = "rounded-lg px-3 py-1.5 text-sm font-medium";
+const BUTTON =
+  "rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors";
 
 // "뉴스 저장" → "✓ 저장됨" (a link to the Notion page) once the save succeeds.
 export function NotionSaveButton({
