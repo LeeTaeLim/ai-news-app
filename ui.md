@@ -215,7 +215,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 
 ```
 ┌─────────────────────────────────┐
-│ [카테고리]                        │
+│ [카테고리]                     ✕ │
 │ 한국어 제목                        │
 │ TechCrunch · 2026년 10월 14일     │
 │                                   │
@@ -255,7 +255,8 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 | 순서 | 요소 | 클래스 |
 |---|---|---|
 | — | 카드 | `flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm` |
-| 1 | 카테고리 배지 | `self-start rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700` |
+| 1 | 윗줄 | `flex items-start justify-between gap-3`: 왼쪽 카테고리 배지, 오른쪽 삭제(✕) 버튼 |
+| 1-1 | 카테고리 배지 | `rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700` |
 | 2 | 제목 | `mt-4 text-lg font-semibold leading-snug break-keep text-slate-900` |
 | 3 | 출처 · 날짜 | `mt-2 text-sm text-slate-500` |
 | 4 | 요약 | `mt-4 text-[15px] leading-7 break-keep text-slate-600` |
@@ -265,6 +266,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 - **hover** 시 살짝 떠오릅니다: `transition hover:-translate-y-0.5 hover:shadow-md hover:border-blue-200`
 - **날짜**는 한국 시간 기준 "2026년 10월 14일" 형식입니다.
 - **하단 영역**은 `mt-auto`로 항상 카드 바닥에 붙습니다.
+- **삭제(✕) 버튼**: `size-8 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600`이고, 아이콘은 `size-4` 크기의 선 두 개입니다. 누르면 확인 없이 바로 DB에서 삭제되고 카드가 목록에서 사라집니다. 삭제하는 동안에는 `disabled:opacity-50`로 비활성화하고, 실패하면 버튼 아래에 `text-xs text-red-600` 안내를 띄웁니다. `aria-label`에는 뉴스 제목을 넣습니다.
 
 ### 하단 버튼
 

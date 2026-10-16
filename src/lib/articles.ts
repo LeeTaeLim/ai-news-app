@@ -119,3 +119,13 @@ export async function insertNewArticles(
     .returning({ id: articles.id });
   return inserted.length;
 }
+
+// Deletes one of the user's articles. Another user's article id matches nothing.
+export async function deleteArticle(
+  userId: string,
+  articleId: string,
+): Promise<void> {
+  await db
+    .delete(articles)
+    .where(and(eq(articles.userId, userId), eq(articles.id, articleId)));
+}

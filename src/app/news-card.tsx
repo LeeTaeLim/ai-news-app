@@ -1,4 +1,5 @@
 import type { ArticleCard } from "@/lib/articles";
+import { DeleteNewsButton } from "./delete-news-button";
 import { NotionSaveButton } from "./notion-save-button";
 
 const SOURCE_LABELS: Record<ArticleCard["source"], string> = {
@@ -19,15 +20,18 @@ export function NewsCard({ article }: { article: ArticleCard }) {
 
   return (
     <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900">
-      <span
-        className={
-          uncategorized
-            ? "self-start rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-            : "self-start rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700 ring-1 ring-blue-100 ring-inset dark:bg-blue-950 dark:text-blue-300 dark:ring-blue-900"
-        }
-      >
-        {article.categoryName ?? "미분류"}
-      </span>
+      <div className="flex items-start justify-between gap-3">
+        <span
+          className={
+            uncategorized
+              ? "rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+              : "rounded-full bg-blue-50 px-2.5 py-0.5 text-sm font-medium text-blue-700 ring-1 ring-blue-100 ring-inset dark:bg-blue-950 dark:text-blue-300 dark:ring-blue-900"
+          }
+        >
+          {article.categoryName ?? "미분류"}
+        </span>
+        <DeleteNewsButton articleId={article.id} title={article.titleKo} />
+      </div>
 
       <h2 className="mt-4 text-lg leading-snug font-semibold break-keep text-slate-900 dark:text-slate-50">
         {article.titleKo}

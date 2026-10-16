@@ -3,6 +3,7 @@
 import { refresh } from "next/cache";
 import { requireUserId } from "@/lib/auth";
 import {
+  deleteArticle,
   filterNewItems,
   getArticleCard,
   insertNewArticles,
@@ -76,5 +77,22 @@ export async function saveToNotion(
   } catch (error) {
     console.error(`saveToNotion failed: ${articleId}`, error);
     return { ok: false, error: "Notion에 저장하지 못했어요. 다시 시도해 주세요." };
+  }
+}
+
+export type DeleteNewsResult = { ok: true } | { ok: false; error: string };
+
+// X button on a card: removes the article from the DB and the list.
+export async function deleteNews(articleId: string): Promise<DeleteNewsResult> {
+  const userId = await requireUserId();
+
+  try {
+    await deleteArticle(userId, articleId);
+    // Already gone (e.g. deleted in another tab) still counts as deleted.
+    refresh();
+    return { ok: true };
+  } catch (error) {
+    console.error(`deleteNews failed: ${articleId}`, error);
+    return { ok: false, error: "뉴스를 삭제하지 못했어요. 다시 시도해 주세요." };
   }
 }
