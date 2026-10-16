@@ -62,6 +62,12 @@ Tailwind 기본 팔레트를 그대로 쓴다. 별도 색상 토큰은 아직 �
 - 왼쪽: 로고(파란 `size-7 rounded-lg` 사각형 안에 흰색 "AI") + 앱 이름. 오른쪽: 사용자 메뉴(Clerk `UserButton`).
 - 이후 단계에서 카테고리 관리 링크, Notion 연결 상태를 오른쪽 사용자 메뉴 왼쪽에 추가한다.
 
+### 푸터 (`NewsShell`)
+- 화면 맨 아래. 본문(`main`)이 `flex-1`이라 내용이 짧아도 푸터는 화면 바닥에 붙는다.
+- 헤더와 짝을 이루도록 흰 배경(다크 `slate-900`) + 위 테두리 `slate-200`(다크 `slate-800`). 고정(sticky)하지 않는다.
+- 안쪽은 `max-w-6xl px-4 py-6 sm:px-6`, 가운데 정렬 한 줄 `text-sm text-slate-500`.
+- 문구: "Copyright 2026 AI 뉴스 수집기. Powered by Claude." — "Claude"만 `font-medium text-slate-700`(다크 `slate-200`)로 살짝 강조한다. 링크나 파란색은 쓰지 않는다.
+
 ### 뉴스 카드 (`NewsCard`)
 
 ```

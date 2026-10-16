@@ -26,6 +26,15 @@ export function NewsShell({
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         {children}
       </main>
+      <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <p className="mx-auto max-w-6xl px-4 py-6 text-center text-sm break-keep text-slate-500 sm:px-6 dark:text-slate-400">
+          Copyright 2026 AI 뉴스 수집기. Powered by{" "}
+          <span className="font-medium text-slate-700 dark:text-slate-200">
+            Claude
+          </span>
+          .
+        </p>
+      </footer>
     </div>
   );
 }

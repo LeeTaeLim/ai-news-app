@@ -80,10 +80,13 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 │ ┌──────────┐  ┌──────────┐  ┌──────────┐             │
 │ │ 뉴스 카드 │  │ 뉴스 카드 │  │ 뉴스 카드 │             │  카드 그리드
 │ └──────────┘  └──────────┘  └──────────┘             │
+│                                                      │
+├──────────────────────────────────────────────────────┤
+│    Copyright 2026 AI 뉴스 수집기. Powered by Claude.    │  푸터
 └──────────────────────────────────────────────────────┘
 ```
 
-순서는 항상 **헤더 → 섹션 제목 → 카테고리 바(오른쪽 끝에 검색) → 카드 그리드**입니다.
+순서는 항상 **헤더 → 섹션 제목 → 카테고리 바(오른쪽 끝에 검색) → 카드 그리드 → 푸터**입니다.
 
 ```tsx
 <div className="flex flex-1 flex-col bg-slate-50">
@@ -91,10 +94,11 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
   <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
     …
   </main>
+  <footer>…</footer>
 </div>
 ```
 
-콘텐츠 폭은 `max-w-6xl`, 좌우 여백은 `px-4 sm:px-6`입니다. 헤더 안쪽도 같습니다.
+콘텐츠 폭은 `max-w-6xl`, 좌우 여백은 `px-4 sm:px-6`입니다. 헤더와 푸터 안쪽도 같습니다.
 
 ---
 
@@ -118,6 +122,21 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 - **오른쪽:** 카테고리 관리 → Notion 연결 상태 → 사용자 메뉴(`UserButton`)
 - Notion 상태는 작은 점(`size-2 rounded-full`)으로 보여 줍니다. 연결되면 파란 점, 아니면 회색 점입니다.
 - 모바일에서는 링크 글자를 숨기고(`hidden sm:inline`) 점과 아이콘만 남깁니다.
+
+### 푸터
+
+```tsx
+<footer className="border-t border-slate-200 bg-white">
+  <p className="mx-auto max-w-6xl px-4 py-6 text-center text-sm break-keep text-slate-500 sm:px-6">
+    Copyright 2026 AI 뉴스 수집기. Powered by{" "}
+    <span className="font-medium text-slate-700">Claude</span>.
+  </p>
+</footer>
+```
+
+- `NewsShell`의 맨 아래에 있어 모든 화면에 같은 푸터가 붙습니다.
+- `main`이 `flex-1`이라 뉴스가 적어도 푸터는 화면 바닥에 붙습니다. 헤더와 달리 고정하지 않습니다.
+- 한 줄 문구만 둡니다. 링크나 메뉴를 늘리지 않습니다.
 
 ---
 
