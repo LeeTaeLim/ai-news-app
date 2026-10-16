@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import type { ArticleCard } from "@/lib/articles";
 import type { CategoryTab } from "@/lib/categories";
@@ -57,6 +57,16 @@ function toNotices(result: FetchNewsResult): Notice[] {
   return notices;
 }
 
+// Case-insensitive substring match on the Korean title and summary.
+function matchesKeyword(article: ArticleCard, keyword: string) {
+  if (keyword === "") return true;
+  const needle = keyword.toLowerCase();
+  return (
+    article.titleKo.toLowerCase().includes(needle) ||
+    article.summaryKo.toLowerCase().includes(needle)
+  );
+}
+
 function matches(article: ArticleCard, filter: Filter) {
   if (filter === ALL) return true;
   if (filter === UNCATEGORIZED) return article.categoryName === null;
@@ -75,6 +85,9 @@ export function DashboardView({
 }) {
   const [filter, setFilter] = useState<Filter>(ALL);
   const [page, setPage] = useState(1);
+  // What's typed vs. what was searched: the list only changes on 검색 / Enter.
+  const [query, setQuery] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [notices, setNotices] = useState<Notice[]>([]);
   const [fetching, startFetching] = useTransition();
 
@@ -103,7 +116,21 @@ export function DashboardView({
     { label: "미분류", filter: UNCATEGORIZED },
   ];
 
-  const visible = articles.filter((a) => matches(a, filter));
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setKeyword(query.trim());
+    setPage(1);
+  }
+
+  function clearSearch() {
+    setQuery("");
+    setKeyword("");
+    setPage(1);
+  }
+
+  // Tab counts and the list both reflect the current search.
+  const searched = articles.filter((a) => matchesKeyword(a, keyword));
+  const visible = searched.filter((a) => matches(a, filter));
   const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
   // Clamped so a shrinking list never leaves the user on an empty page.
   const currentPage = Math.min(page, pageCount);
@@ -144,43 +171,90 @@ export function DashboardView({
         </div>
       )}
 
-      <nav
-        aria-label="카테고리"
-        className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0"
-      >
-        <ul className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
-          {tabs.map((tab) => {
-            const selected = tab.filter === filter;
-            const count = articles.filter((a) => matches(a, tab.filter)).length;
-            return (
-              <li key={tab.filter}>
-                <button
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => {
-                    setFilter(tab.filter);
-                    setPage(1);
-                  }}
-                  className={selected ? SELECTED : TAB}
-                >
-                  {tab.label}
-                  <span className="ml-1 text-xs opacity-70">{count}</span>
-                </button>
-              </li>
-            );
-          })}
-          <li>
-            <Link href="/categories?new=1" className={ADD}>
-              + 카테고리 추가
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <nav
+          aria-label="카테고리"
+          className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 lg:min-w-0 lg:flex-1"
+        >
+          <ul className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
+            {tabs.map((tab) => {
+              const selected = tab.filter === filter;
+              const count = searched.filter((a) => matches(a, tab.filter)).length;
+              return (
+                <li key={tab.filter}>
+                  <button
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => {
+                      setFilter(tab.filter);
+                      setPage(1);
+                    }}
+                    className={selected ? SELECTED : TAB}
+                  >
+                    {tab.label}
+                    <span className="ml-1 text-xs opacity-70">{count}</span>
+                  </button>
+                </li>
+              );
+            })}
+            <li>
+              <Link href="/categories?new=1" className={ADD}>
+                + 카테고리 추가
+              </Link>
+            </li>
+          </ul>
+        </nav>
+  
+        <form
+          role="search"
+          onSubmit={handleSearch}
+          className="flex gap-2 lg:w-80 lg:shrink-0"
+        >
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="제목이나 요약에서 키워드 검색"
+            aria-label="뉴스 검색어"
+            className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-500 dark:focus:border-blue-400"
+          />
+          <button
+            type="submit"
+            className="shrink-0 rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            검색
+          </button>
+        </form>
+      </div>
+
+      {keyword !== "" && (
+        <p className="-mt-3 mb-4 flex flex-wrap items-center gap-2 text-sm break-keep text-slate-500 dark:text-slate-400">
+          <span>
+            ‘
+            <span className="font-medium text-slate-900 dark:text-slate-50">
+              {keyword}
+            </span>
+            ’ 검색 결과 {visible.length}개
+          </span>
+          <button
+            type="button"
+            onClick={clearSearch}
+            className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+          >
+            검색 지우기
+          </button>
+        </p>
+      )}
 
       {articles.length === 0 ? (
         <EmptyState
           title="아직 저장된 뉴스가 없어요."
           hint="뉴스를 가져오면 여기에 카드로 표시됩니다."
+        />
+      ) : visible.length === 0 && keyword !== "" ? (
+        <EmptyState
+          title={`‘${keyword}’에 해당하는 뉴스가 없어요.`}
+          hint="다른 키워드로 검색하거나 다른 카테고리를 선택해 보세요."
         />
       ) : visible.length === 0 ? (
         <EmptyState title="이 카테고리에 해당하는 뉴스가 없어요." />

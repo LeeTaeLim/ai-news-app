@@ -73,7 +73,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 │                                                      │
 │ 최신 뉴스 24개                      [ 뉴스 가져오기 ]   │  섹션 제목
 │                                                      │
-│ (전체) (AI 모델/연구) (제품/서비스) … (미분류) (+ 추가)  │  카테고리 바
+│ (전체) (AI 모델/연구) … (+ 추가)    [ 키워드   ][검색] │  카테고리 바 + 검색
 │                                                      │
 │ ┌──────────┐  ┌──────────┐  ┌──────────┐             │
 │ │ 뉴스 카드 │  │ 뉴스 카드 │  │ 뉴스 카드 │             │  카드 그리드
@@ -81,7 +81,7 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 └──────────────────────────────────────────────────────┘
 ```
 
-순서는 항상 **헤더 → 섹션 제목 → 카테고리 바 → 카드 그리드**입니다.
+순서는 항상 **헤더 → 섹션 제목 → 카테고리 바(오른쪽 끝에 검색) → 카드 그리드**입니다.
 
 ```tsx
 <div className="flex flex-1 flex-col bg-slate-50">
@@ -181,6 +181,33 @@ AI 뉴스 수집기의 화면을 만들 때 따르는 규칙입니다.
 - 모바일은 한 줄 가로 스크롤, `sm` 이상은 여러 줄로 감깁니다.
 - 추가 버튼을 누르면 카테고리 관리 화면의 추가 폼으로 갑니다.
 - 선택한 카테고리에 뉴스가 없으면 "이 카테고리에 해당하는 뉴스가 없어요."를 보여 줍니다.
+
+### 키워드 검색
+
+검색 입력칸과 "검색" 버튼은 카테고리 바와 같은 줄의 **오른쪽 끝**에 둡니다. 탭이 많으면 탭만 여러 줄로 감기고 검색은 오른쪽 위에 남습니다. `lg` 미만에서는 공간이 부족하므로 검색이 카테고리 바 아래 줄로 내려가 전체 폭을 씁니다.
+
+```tsx
+<div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+  <nav aria-label="카테고리" className="… lg:min-w-0 lg:flex-1">…</nav>
+  <form role="search" className="flex gap-2 lg:w-80 lg:shrink-0">
+    <input
+      type="search"
+      placeholder="제목이나 요약에서 키워드 검색"
+      className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 focus:outline-none"
+    />
+    <button type="submit" className="shrink-0 rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700">
+      검색
+    </button>
+  </form>
+</div>
+```
+
+- 입력하는 동안에는 목록이 바뀌지 않습니다. **"검색" 버튼이나 Enter**를 눌러야 검색합니다.
+- 한국어 제목과 요약에서 대소문자 구분 없이 찾습니다.
+- 검색은 선택한 카테고리 탭과 함께 적용됩니다. 탭 옆 숫자와 제목 옆 개수도 검색 결과 기준입니다.
+- 검색하면 1페이지로 돌아갑니다. 빈 검색어로 검색하면 전체 목록으로 돌아갑니다.
+- 검색 중에는 입력칸 아래에 "‘키워드’ 검색 결과 N개"와 "검색 지우기" 링크를 보여 줍니다.
+- 결과가 없으면 "‘키워드’에 해당하는 뉴스가 없어요."를 보여 줍니다.
 
 ---
 

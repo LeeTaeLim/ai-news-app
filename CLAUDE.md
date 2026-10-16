@@ -20,6 +20,16 @@ npm run lint    # ESLint (flat config, next core-web-vitals + typescript)
 
 No test runner is configured yet.
 
+### Feature workflow (`/news-workflow`)
+
+Start new feature work with the `/news-workflow [branch-name]` slash command, defined in `.claude/commands/news-workflow.md`. It runs these steps:
+
+1. Check `git status` and the current branch. If it isn't `main`, warn and ask before switching to `main`.
+2. Create the feature branch from the argument. With no argument, ask what the feature is and suggest a lowercase, hyphenated English name (e.g. `category-filter`).
+3. Tell the user to start developing ("이제 개발을 시작하세요!") and recap this file's stack and conventions.
+4. When the user types "완료" or "done", show the changed files and suggest a one-line Korean commit message in the style of existing commits ("~ 추가"). After the user confirms, commit and merge into `main`. On a merge conflict, stop and ask.
+5. Summarize the work: branch, commit, changed files and the feature. The command doesn't push to `origin`.
+
 The `dev`/`build`/`start` scripts run Next through `node --use-system-ca`. This machine's network re-signs HTTPS with its own root CA (`namguswg`). Windows trusts that CA but Node does not, so without the flag every server-side `fetch` fails with `SELF_SIGNED_CERT_IN_CHAIN`. That covers Clerk's handshake, Claude, Neon, RSS and Notion. Next passes the flag to its worker processes through `NODE_OPTIONS`. Don't change these scripts back to plain `next dev`.
 
 ## Stack and Next.js version caveats
